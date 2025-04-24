@@ -9,14 +9,27 @@ import torch
 import shap
 import matplotlib.pyplot as plt
 import xgboost as xgb
+import matplotlib.font_manager as fm
+import os
 
 st.set_page_config(layout="wide")
-plt.rcParams["font.sans-serif"] = ["SimHei", "Times New Roman"]
-plt.rcParams['axes.titlesize'] = 16  # 图标题字号
-plt.rcParams['axes.labelsize'] = 14  # x/y轴标签字号
-plt.rcParams['xtick.labelsize'] = 14  # x轴刻度字号
-plt.rcParams['ytick.labelsize'] = 14  # y轴刻度字号
-plt.rcParams['legend.fontsize'] = 14  # 图例字号
+
+# 加载中文字体
+font_path = "NotoSerifSC-Regular.ttf"
+if os.path.exists(font_path):
+    font_prop = fm.FontProperties(fname=font_path)
+else:
+    st.warning(f"⚠️ 字体文件未找到: {font_path}")
+    font_prop = None
+
+# 设置 matplotlib 样式
+plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams["axes.titlesize"] = 16
+plt.rcParams["axes.labelsize"] = 14
+plt.rcParams["xtick.labelsize"] = 14
+plt.rcParams["ytick.labelsize"] = 14
+plt.rcParams["legend.fontsize"] = 14
+
 
 
 def aggregate_features(window):
@@ -221,10 +234,13 @@ if __name__ == '__main__':
             for feat in selected_features:
                 if feat in df_patient.columns:
                     ax1.plot(df_patient["入院天数"], df_patient[feat], marker="o", label=feat)
-            ax1.set_title(f"患者 {patient_select} 特征趋势图")
-            ax1.set_xlabel("入院天数")
-            ax1.set_ylabel("数值")
-            ax1.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=7, framealpha=0.5)
+            ax1.set_title(f"患者 {patient_select} 特征趋势图", fontproperties=font_prop)
+            ax1.set_xlabel("入院天数", fontproperties=font_prop)
+            ax1.set_ylabel("数值", fontproperties=font_prop)
+            legend1 = ax1.legend(loc='center left', bbox_to_anchor=(1.02, 0.5), fontsize=7, framealpha=0.5)
+            if font_prop:
+                for text in legend1.get_texts():
+                    text.set_fontproperties(font_prop)
             ax1.grid(True)
             st.pyplot(fig1)
 
@@ -261,10 +277,13 @@ if __name__ == '__main__':
                         ax2.bar(x - width / 2, mean1.values, width, label=f"患者 {patient_a}")
                         ax2.bar(x + width / 2, mean2.values, width, label=f"患者 {patient_b}")
                         ax2.set_xticks(x)
-                        ax2.set_xticklabels(filtered_features, rotation=45, fontsize=7)  # ✅ 缩小横坐标字体
-                        ax2.set_ylabel("平均值", fontsize=7)  # ✅ 缩小坐标轴标题
-                        ax2.set_title("关键特征平均值对比", fontsize=7)
-                        ax2.legend()
+                        ax2.set_xticklabels(filtered_features, rotation=45, fontsize=7)
+                        ax2.set_ylabel("平均值", fontsize=7, fontproperties=font_prop)
+                        ax2.set_title("关键特征平均值对比", fontsize=7, fontproperties=font_prop)
+                        legend2 = ax2.legend()
+                        if font_prop:
+                            for text in legend2.get_texts():
+                                text.set_fontproperties(font_prop)
                         ax2.grid(True)
                         st.pyplot(fig2)
                 except Exception as e:
@@ -313,14 +332,15 @@ if __name__ == '__main__':
                     xgb.plot_importance(
                         xgb_model,
                         ax=ax_imp,
-                        importance_type='gain',  # 可选 'weight', 'gain', 'cover'
+                        importance_type='gain',
                         max_num_features=15,
                         height=0.4,
                         show_values=False
                     )
-                    ax_imp.set_title("XGBoost 特征重要性（按 Gain 排序）")
+                    ax_imp.set_title("XGBoost 特征重要性（按 Gain 排序）", fontproperties=font_prop)
                     plt.tight_layout()
                     st.pyplot(fig_imp)
                 except Exception as e:
                     st.error(f"绘制特征重要性失败：{e}")
+
 
