@@ -277,7 +277,7 @@ if __name__ == '__main__':
                         ax2.bar(x - width / 2, mean1.values, width, label=f"患者 {patient_a}")
                         ax2.bar(x + width / 2, mean2.values, width, label=f"患者 {patient_b}")
                         ax2.set_xticks(x)
-                        ax2.set_xticklabels(filtered_features, rotation=45, fontsize=7)
+                        ax2.set_xticklabels(filtered_features, rotation=45, fontsize=7, fontproperties=font_prop)
                         ax2.set_ylabel("平均值", fontsize=7, fontproperties=font_prop)
                         ax2.set_title("关键特征平均值对比", fontsize=7, fontproperties=font_prop)
                         legend2 = ax2.legend()
@@ -342,5 +342,4 @@ if __name__ == '__main__':
                     st.pyplot(fig_imp)
                 except Exception as e:
                     st.error(f"绘制特征重要性失败：{e}")
-
 
