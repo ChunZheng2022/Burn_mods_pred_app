@@ -45,7 +45,7 @@ class DataProcessor:
         self.orig_feature_cols = [
                                      c for c in self.df.columns
                                      if c not in ['检查时间', '序号', 'label']
-                                 ] + ['入院天数']
+                                 ]
         print("\n原始数据标签分布:")
         print(self.df['label'].value_counts(dropna=False).to_frame("数量"))
         return self.df
@@ -68,7 +68,7 @@ class DataProcessor:
                         if days > median_mods_day:
                             continue
                     features = patient_data.iloc[i:window_end].drop(
-                        columns=['检查时间', '序号', 'label'], errors='ignore'
+                        columns=['检查时间', '序号', 'label', '入院天数'], errors='ignore'
                     ).fillna(0)
                     features = features.values.astype(np.float32)
                     samples.append(features)
